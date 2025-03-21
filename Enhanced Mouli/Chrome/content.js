@@ -3,12 +3,15 @@ const skillsCache = {};
 const expandedSkills = {};
 let settings = {
   autoExpand: false,
-  highContrast: false
+  highContrast: false,
+  darkTheme: false // P7b8b
 };
 
-chrome.storage.local.get(['autoExpand', 'highContrast'], (result) => {
+chrome.storage.local.get(['autoExpand', 'highContrast', 'darkTheme'], (result) => { // P7b8b
   settings.autoExpand = result.autoExpand || false;
   settings.highContrast = result.highContrast || false;
+  settings.darkTheme = result.darkTheme || false; // P7b8b
+  applyTheme(); // P7b8b
 });
 
 chrome.storage.onChanged.addListener((changes) => {
@@ -18,6 +21,10 @@ chrome.storage.onChanged.addListener((changes) => {
   if (changes.highContrast) {
     settings.highContrast = changes.highContrast.newValue;
     updatePercentages();
+  }
+  if (changes.darkTheme) { // P7b8b
+    settings.darkTheme = changes.darkTheme.newValue; // P7b8b
+    applyTheme(); // P7b8b
   }
 });
 
@@ -114,6 +121,16 @@ const styles = `
   color: #d50000;
   font-weight: bold;
 }
+
+/* Dark theme styles */ // P1e62
+.dark-theme { // P1e62
+  --background: #0A1020; // P1e62
+  --surface: #141E33; // P1e62
+  --surface-light: #1C2942; // P1e62
+  --text: #F0F4FD; // P1e62
+  --text-secondary: #A1AECB; // P1e62
+  --border: #2A3654; // P1e62
+} // P1e62
 `;
 
 function injectStyles() {
@@ -121,6 +138,14 @@ function injectStyles() {
   styleEl.textContent = styles;
   document.head.appendChild(styleEl);
 }
+
+function applyTheme() { // P7b8b
+  if (settings.darkTheme) { // P7b8b
+    document.body.classList.add('dark-theme'); // P7b8b
+  } else { // P7b8b
+    document.body.classList.remove('dark-theme'); // P7b8b
+  } // P7b8b
+} // P7b8b
 
 function debugLog() {
   console.log("EnhancedMouli:", ...arguments);
