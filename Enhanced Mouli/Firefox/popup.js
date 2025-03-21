@@ -11,13 +11,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     autoExpandCheckbox.addEventListener('change', function() {
       browser.storage.local.set({ autoExpand: this.checked });
+      location.reload();
     });
     
     highContrastCheckbox.addEventListener('change', function() {
       browser.storage.local.set({ highContrast: this.checked });
+      location.reload();
     });
 
     darkThemeCheckbox.addEventListener('change', function() {
       browser.storage.local.set({ darkTheme: this.checked });
+      location.reload();
     });
   });

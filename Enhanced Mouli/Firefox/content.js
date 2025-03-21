@@ -26,6 +26,7 @@ browser.storage.onChanged.addListener((changes) => {
     settings.darkTheme = changes.darkTheme.newValue;
     applyTheme();
   }
+  location.reload(); // P1829
 });
 
 const styles = `
