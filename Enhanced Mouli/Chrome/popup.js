@@ -19,5 +19,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   darkThemeCheckbox.addEventListener('change', function() { // P9d1f
     chrome.storage.local.set({ darkTheme: this.checked }); // P9d1f
+    chrome.tabs.query({ url: "https://my.epitech.eu/*" }, function(tabs) {
+      tabs.forEach(function(tab) {
+        chrome.tabs.reload(tab.id);
+      });
+    });
   }); // P9d1f
 });

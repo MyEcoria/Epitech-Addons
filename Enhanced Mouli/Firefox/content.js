@@ -25,6 +25,7 @@ browser.storage.onChanged.addListener((changes) => {
   if (changes.darkTheme) {
     settings.darkTheme = changes.darkTheme.newValue;
     applyTheme();
+    refreshPage();
   }
 });
 
@@ -145,6 +146,10 @@ function applyTheme() {
   } else {
     document.body.classList.remove('dark-theme');
   }
+}
+
+function refreshPage() {
+  location.reload();
 }
 
 function debugLog() {
