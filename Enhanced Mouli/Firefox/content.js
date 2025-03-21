@@ -3,12 +3,17 @@ const skillsCache = {};
 const expandedSkills = {};
 let settings = {
   autoExpand: false,
-  highContrast: false
+  highContrast: false,
+  darkTheme: false
 };
-browser.storage.local.get(['autoExpand', 'highContrast']).then((result) => {
+
+browser.storage.local.get(['autoExpand', 'highContrast', 'darkTheme']).then((result) => {
   settings.autoExpand = result.autoExpand || false;
   settings.highContrast = result.highContrast || false;
+  settings.darkTheme = result.darkTheme || false;
+  applyTheme();
 });
+
 browser.storage.onChanged.addListener((changes) => {
   if (changes.autoExpand) {
     settings.autoExpand = changes.autoExpand.newValue;
@@ -17,7 +22,12 @@ browser.storage.onChanged.addListener((changes) => {
     settings.highContrast = changes.highContrast.newValue;
     updatePercentages();
   }
+  if (changes.darkTheme) {
+    settings.darkTheme = changes.darkTheme.newValue;
+    applyTheme();
+  }
 });
+
 const styles = `
 .epi-percentage-container {
   margin-top: 10px;
@@ -111,12 +121,32 @@ const styles = `
   color: #d50000;
   font-weight: bold;
 }
+
+/* Dark theme styles */
+.dark-theme {
+  --background: #0A1020;
+  --surface: #141E33;
+  --surface-light: #1C2942;
+  --text: #F0F4FD;
+  --text-secondary: #A1AECB;
+  --border: #2A3654;
+}
 `;
+
 function injectStyles() {
   const styleEl = document.createElement('style');
   styleEl.textContent = styles;
   document.head.appendChild(styleEl);
 }
+
+function applyTheme() {
+  if (settings.darkTheme) {
+    document.body.classList.add('dark-theme');
+  } else {
+    document.body.classList.remove('dark-theme');
+  }
+}
+
 function debugLog() {
   console.log("EnhancedMouli:", ...arguments);
 }
@@ -128,6 +158,7 @@ function debugWarn() {
 function debugError() {
   console.error("EnhancedMouli:", ...arguments);
 }
+
 function includes(a, b) {
   const len = a.length;
   for(let i = 0; i < len; i++) {
@@ -146,6 +177,7 @@ function findParentBySelector(node, selector) {
   }
   return cur;
 }
+
 document.addEventListener("__xmlrequest", (event) => {
   const elements = JSON.parse(event.detail);
 
@@ -162,6 +194,7 @@ document.addEventListener("__xmlrequest", (event) => {
     }
   }
 });
+
 async function fetchProjects() {
   debugLog("Fetching projects...");
   const [kind, year] = window.location.hash?.split("/");
@@ -206,6 +239,7 @@ async function fetchProjects() {
     debugError("Error fetching projects:", error);
   }
 }
+
 function getColorForPercentage(percentage) {
   if (settings.highContrast) {
     if (percentage >= 90) return '#00c853';
@@ -390,6 +424,7 @@ function initialize() {
   });
   setTimeout(updatePercentages, 500);
 }
+
 const inject = () => {
   const send = window.XMLHttpRequest.prototype.send;
   
@@ -423,6 +458,7 @@ const inject = () => {
   window.XMLHttpRequest.prototype.send = sendreplacement;
   debugLog("XHR Interceptor injected");
 };
+
 initialize();
 const actualCode = '(' + inject + ')();';
 const script = document.createElement('script');
